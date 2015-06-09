@@ -37,19 +37,43 @@ main.show();
 
 
 main.on('click', 'up', function(e) {
-  loadFromUrl("devices/");
-  showDevices(_rtnData.devices, "All Devices");
+  loadAllDevices();
 });
 
 main.on('click', 'select', function(e) {
-  loadFromUrl("pages/pebble");
-  deceideNextElement(_rtnData.page.devices, "Favourites");
+  loadFavDevices();
 });
 
 main.on('click', 'down', function(e) {
-  loadFromUrl("config/");
-  deceideNextElement(_rtnData, "Full Config");
+  loadConfig();
 });
+
+function loadConfig(){
+  loadFromUrl("config/", loadConfigCallBack);
+}
+
+function loadConfigCallBack(){
+  deceideNextElement(_rtnData, "Full Config");
+}
+
+function loadAllDevices(){
+  loadFromUrl("devices/", loadAllDevicesCallBack);
+} 
+
+function loadAllDevicesCallBack() {
+  showDevices(_rtnData.devices, "All Devices");
+}
+
+function loadFavDevices(){
+  loadFromUrl("pages/pebble", loadFavDevicesCallBack);
+}
+
+function loadFavDevicesCallBack()
+{
+  deceideNextElement(_rtnData.page.devices, "Favourites");
+}
+
+
 
 function showDevices(devices){
   var next = Object.prototype.toString.call(devices);
@@ -88,7 +112,7 @@ function showDevices(devices){
 
 function getDeviceState(id){
   var state = "UNKNOWN - " + id;
-  loadFromUrl("devices/" + id);
+  loadFromUrl("devices/" + id, null);
   console.log(JSON.stringify(_rtnData));
   try {
     switch (_rtnData.device.template) {
@@ -110,7 +134,7 @@ function getDeviceState(id){
   return state;
 }
 
-function loadFromUrl(url) {
+function loadFromUrl(url, callback) {
   var card = startLoading();
   ajax(
     {
@@ -123,6 +147,7 @@ function loadFromUrl(url) {
       //console.log('Response: ' + data);
       _rtnData = data;
       card.hide();
+      if (callback !== null) callback();
     },
     function(error, status, request) {
       console.log(_apiUrl);
