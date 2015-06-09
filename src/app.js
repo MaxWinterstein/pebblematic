@@ -17,14 +17,11 @@ var _apiUrl = Settings.option('api-url');
 
 Light.on();
 
-
-
-
 var main = new UI.Card({
-  title: 'Pebble & pimatic',
+  title: 'Pimatic',
   icon: 'images/menu_icon.png',
-  //subtitle: 'by Max Winterstein',
-  body: '[select] for devices\n' +
+  //subtitle: 'Pebble meets pimatic',
+  body: '\n[select] for devices\n' +
         '[down] for full config\n' +
         '[up] to show api-url\n\n' +
         '       by Max Winterstein'
@@ -126,9 +123,11 @@ function deceideNextElement(element, description) {
         items.push({item: element[key], title: key, subtitle: element[key]});
       else if (Object.prototype.toString.call(element[key]) == "[object Boolean]" || Object.prototype.toString.call(element[key]) == "[object Number]")
         items.push({item: element[key], title: key, subtitle: element[key].toString()});
+      else if (Object.prototype.toString.call(element[key]) == "[object Array]")
+        items.push({item: element[key], title: key, subtitle: "{ ... } (" + element[key].length + " Items)"});
       else if (Object.prototype.toString.call(element[key]) == "[object Object]")
-        items.push({item: element[key], title: key, subtitle: "{ ... }"});
-      else items.push({item: element[key], title: key});
+        items.push({item: element[key], title: key, subtitle: "{ ... } (" + Object.keys(element[key]).length + " Items)"});
+      else items.push({item: element[key], title: key, subtitle: "!!! not recognized"});
 
     }
     console.log(items.toString());
