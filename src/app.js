@@ -2,7 +2,8 @@
 *
 *  Pebble app for pimatic (pimatic.org) by MaxWinterstein
 *  
-*
+*  refs for me
+*  colors: https://github.com/pebble/pebblejs/blob/master/src/js/ui/simply-pebble.js#L73
 */
 
 var UI = require('ui');
@@ -25,9 +26,10 @@ var main = new UI.Card({
   //subtitle: 'by Max Winterstein',
   body: '[select] for devices\n' +
         '[down] for full config\n' +
-        '[up] to show api-url\n' +
-        '     by Max Winterstein'
+        '[up] to show api-url\n\n' +
+        '       by Max Winterstein'
 });
+main.backgroundColor('tiffanyBlue');
 main.show();
 
 
