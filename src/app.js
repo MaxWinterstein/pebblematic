@@ -13,6 +13,7 @@ var Light = require('ui/light');
 var mySettings = require('mysettings');
 
 var _rtnData;
+var _loadingScreen = null;
 
 Light.on();
 
@@ -47,6 +48,7 @@ function loadConfig(){
 
 function loadConfigCallBack(){
   deceideNextElement(_rtnData, "Full Config");
+  _loadingScreen.hide();
 }
 
 function loadAllDevices(){
@@ -55,10 +57,12 @@ function loadAllDevices(){
 
 function loadAllDevicesCallBack() {
   showDevices(_rtnData.devices, "All Devices");
+  _loadingScreen.hide();
 }
 
 function loadFavDevices(){
   loadFromUrl("pages/pebble", loadFavDevicesCallBack);
+  _loadingScreen.hide();
 }
 
 function loadFavDevicesCallBack(){
@@ -127,7 +131,7 @@ function getDeviceState(id){
 }
 
 function loadFromUrl(url, callback) {
-  var card = startLoading();
+  startLoading();
   ajax(
     {
       url: mySettings.apiUrl +  url,
@@ -138,27 +142,27 @@ function loadFromUrl(url, callback) {
     function(data, status, request) {
       //console.log('Response: ' + data);
       _rtnData = data;
-      card.hide();
       if (callback !== null) callback();
     },
     function(error, status, request) {
       console.log(mySettings.apiUrl);
       console.log('The ajax request failed: ' + error + status + request);
-      card.scrollable(true);
-      card.title("ERROR");
-      card.subtitle(status);
-      card.body(error + "\n" + request);
+      var errorCard = new UI.Card();
+      errorCard.scrollable(true);
+      errorCard.title("ERROR");
+      errorCard.subtitle(status);
+      errorCard.body(error + "\n" + request);
+      errorCard.show();
     }
   );
 }
 
 
 function startLoading() {
-  var card = new UI.Card();
-  card.title('Loading...');
-  card.subtitle('Please wait :)');
-  card.show();
-  return card;
+  _loadingScreen = (_loadingScreen === null) ? new UI.Card() :_loadingScreen;
+  _loadingScreen.title('Loading...');
+  _loadingScreen.subtitle('Please wait :)');
+  _loadingScreen.show();
 }
 
 function deceideNextElement(element, description) {
