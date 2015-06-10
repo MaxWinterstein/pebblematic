@@ -6,18 +6,11 @@
 *  colors: https://github.com/pebble/pebblejs/blob/master/src/js/ui/simply-pebble.js#L73
 */
 
-
-// known bugs
-// - async ajax load - menue open only on second click
-
 var UI = require('ui');
-//var Vector2 = require('vector2');
 var ajax = require('ajax');
 var Light = require('ui/light');
-var Settings = require('settings');
 
-require('mysettings');
-var _apiUrl = Settings.option('api-url');
+var mySettings = require('mysettings');
 
 var _rtnData;
 
@@ -68,8 +61,7 @@ function loadFavDevices(){
   loadFromUrl("pages/pebble", loadFavDevicesCallBack);
 }
 
-function loadFavDevicesCallBack()
-{
+function loadFavDevicesCallBack(){
   deceideNextElement(_rtnData.page.devices, "Favourites");
 }
 
@@ -138,10 +130,10 @@ function loadFromUrl(url, callback) {
   var card = startLoading();
   ajax(
     {
-      url: _apiUrl +  url,
+      url: mySettings.apiUrl +  url,
       type: 'json',
       cache: false,
-      async: false
+      async: (callback !== null) // nasty trick - seems to work. problem with async and loading screens. fix me later please.
     },
     function(data, status, request) {
       //console.log('Response: ' + data);
@@ -150,7 +142,7 @@ function loadFromUrl(url, callback) {
       if (callback !== null) callback();
     },
     function(error, status, request) {
-      console.log(_apiUrl);
+      console.log(mySettings.apiUrl);
       console.log('The ajax request failed: ' + error + status + request);
       card.scrollable(true);
       card.title("ERROR");

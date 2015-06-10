@@ -26,3 +26,6 @@ Settings.config(
     }
   }
 );
+
+var apiUrl = Settings.option('api-url');
+module.exports = { apiUrl: apiUrl};
