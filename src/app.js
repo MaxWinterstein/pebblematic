@@ -20,10 +20,13 @@ var _loadingScreen = null;
 
 Light.on();
 
+setTimeout(function () { console.log("test"); }, 5000);
+
+
 var main = new UI.Card({
   title: 'Pebblematic',
-  subicon : 'images/menu_icon.png',
-  //subtitle: 'Pebble meets pimatic',
+  //subicon : 'images/menu_icon.png',
+  //subtitle: 'pimatic.org',
   body: '\n[up] all devices\n' +
   '[select] favourites\n' +
   '[down] for full config\n\n' +
