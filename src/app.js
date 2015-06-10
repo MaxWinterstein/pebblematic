@@ -45,7 +45,6 @@ main.on('click', 'down', function(e) {
 function loadConfig(){
   loadFromUrl("config/", loadConfigCallBack);
 }
-
 function loadConfigCallBack(){
   deceideNextElement(_rtnData, "Full Config");
   _loadingScreen.hide();
@@ -54,7 +53,6 @@ function loadConfigCallBack(){
 function loadAllDevices(){
   loadFromUrl("devices/", loadAllDevicesCallBack);
 } 
-
 function loadAllDevicesCallBack() {
   showDevices(_rtnData.devices, "All Devices");
   _loadingScreen.hide();
@@ -64,12 +62,9 @@ function loadFavDevices(){
   loadFromUrl("pages/pebble", loadFavDevicesCallBack);
   _loadingScreen.hide();
 }
-
 function loadFavDevicesCallBack(){
   deceideNextElement(_rtnData.page.devices, "Favourites");
 }
-
-
 
 function showDevices(devices){
   var next = Object.prototype.toString.call(devices);
@@ -81,7 +76,7 @@ function showDevices(devices){
   for(var device in devices){
     next = Object.prototype.toString.call(device);
     console.log("next device is " + device + " - " + next);
- 
+    devices[device].myActions = getDeviceActions(devices[device]);
     items.push({item: devices[device], title: devices[device].name, subtitle: getDeviceState(devices[device].id)});
   }
   var menu = new UI.Menu({
@@ -98,12 +93,38 @@ function showDevices(devices){
       console.log("Key:" + prop);
       console.log("Value:" + e.item[prop]);
     }
-
-
     deceideNextElement(e.item.item, e.item.title);
+  });
+  menu.on('longSelect', function(e) {
+    console.log('Selected item #' + e.itemIndex + " - " + e.item.title +' of section #' + e.sectionIndex);
+    console.log("e.item.item.myActions.longPressAction: " + e.item.item.myActions.longPressAction);
+    if (e.item.item.myActions !== null) e.item.item.myActions.longPressAction();
+    e.item.subtitle =  getDeviceState(e.item.item.id);
+    _loadingScreen.hide();
+    //e.selection(e.item);
+    //e.item.subtitle =  Date.now();
   });
   menu.show();
   
+}
+
+function getDeviceActions(device){
+  var longPress = "not set";
+  console.log("getDeviceActions for: " + device.name + " with template " + device.template);
+  switch (device.template) {
+    case "presence":
+      //       state = (device.attributes[0].value === false) ? "absend" : "presend";
+      break;
+    case "switch":
+      longPress = function() {
+        loadFromUrl("device/" + device.id + "/toggle", null);  
+      };
+      break;
+    default:
+      //   state = "! " + device.template;
+      break;
+  }
+  return {longPressAction: longPress };
 }
 
 function getDeviceState(id){

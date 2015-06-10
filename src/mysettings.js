@@ -1,3 +1,5 @@
+/* global module */
+
 var Settings = require('settings');
 
 // Set a configurable with the open callback
