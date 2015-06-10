@@ -6,6 +6,9 @@
 *  colors: https://github.com/pebble/pebblejs/blob/master/src/js/ui/simply-pebble.js#L73
 */
 
+// known bugs
+// - menu refreshes to wrong item 
+
 var UI = require('ui');
 var ajax = require('ajax');
 var Light = require('ui/light');
@@ -18,8 +21,8 @@ var _loadingScreen = null;
 Light.on();
 
 var main = new UI.Card({
-  title: 'Pimatic',
-  icon: 'images/menu_icon.png',
+  title: 'Pebblematic',
+  subicon : 'images/menu_icon.png',
   //subtitle: 'Pebble meets pimatic',
   body: '\n[up] all devices\n' +
   '[select] favourites\n' +
@@ -101,6 +104,7 @@ function showDevices(devices){
     if (e.item.item.myActions !== null) e.item.item.myActions.longPressAction();
     e.item.subtitle =  getDeviceState(e.item.item.id);
     _loadingScreen.hide();
+    console.log("e.keys" + Object.keys(e).toString());
     //e.selection(e.item);
     //e.item.subtitle =  Date.now();
   });
