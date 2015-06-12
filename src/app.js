@@ -12,6 +12,7 @@
 var UI = require('ui');
 var ajax = require('ajax');
 var Light = require('ui/light');
+//var Vector2 = require('vector2');
 
 var mySettings = require('mysettings');
 
@@ -20,14 +21,14 @@ var _loadingScreen = null;
 
 Light.on();
 
-setTimeout(function () { console.log("test"); }, 5000);
+//setTimeout(function () { loadAllDevices();}, 5000);
 
 
 var main = new UI.Card({
   title: 'Pebblematic',
   //subicon : 'images/menu_icon.png',
-  //subtitle: 'pimatic.org',
-  body: '\n[up] all devices\n' +
+  subtitle: 'pimatic.org',
+  body: '[up] all devices\n' +
   '[select] favourites\n' +
   '[down] for full config\n\n' +
   '       by Max Winterstein'
@@ -35,6 +36,16 @@ var main = new UI.Card({
 main.backgroundColor('tiffanyBlue');
 main.show();
 
+/*
+var splashScreen = new UI.Card({ banner: new UI.Image({
+  position: new Vector2(0, 0),
+  size: new Vector2(144, 144),
+  backgroundColor: 'clear',
+  image: 'MY_LOGO_NEW',
+}) });
+splashScreen.show();
+
+*/
 
 main.on('click', 'up', function(e) {
   loadAllDevices();
@@ -53,7 +64,7 @@ function loadConfig(){
 }
 function loadConfigCallBack(){
   deceideNextElement(_rtnData, "Full Config");
-  _loadingScreen.hide();
+  //_loadingScreen.hide();
 }
 
 function loadAllDevices(){
@@ -61,12 +72,12 @@ function loadAllDevices(){
 } 
 function loadAllDevicesCallBack() {
   showDevices(_rtnData.devices, "All Devices");
-  _loadingScreen.hide();
+  //_loadingScreen.hide();
 }
 
 function loadFavDevices(){
   loadFromUrl("pages/pebble", loadFavDevicesCallBack);
-  _loadingScreen.hide();
+  //_loadingScreen.hide();
 }
 function loadFavDevicesCallBack(){
   deceideNextElement(_rtnData.page.devices, "Favourites");
@@ -88,7 +99,7 @@ function showDevices(devices){
   var menu = new UI.Menu({
     sections: [{
       items: items
-    }]
+    }],
   });
   menu.on('select', function(e) {
     console.log('Selected item #' + e.itemIndex + ' of section #' + e.sectionIndex);
@@ -106,10 +117,12 @@ function showDevices(devices){
     console.log("e.item.item.myActions.longPressAction: " + e.item.item.myActions.longPressAction);
     if (e.item.item.myActions !== null) e.item.item.myActions.longPressAction();
     e.item.subtitle =  getDeviceState(e.item.item.id);
-    _loadingScreen.hide();
+    //_loadingScreen.hide();
     console.log("e.keys" + Object.keys(e).toString());
-    //e.selection(e.item);
+    //deceideNextElement(e, "bla");
+    //e.menu.select(e.itemIndex);
     //e.item.subtitle =  Date.now();
+    
   });
   menu.show();
   
@@ -159,7 +172,7 @@ function getDeviceState(id){
 }
 
 function loadFromUrl(url, callback) {
-  startLoading();
+  //startLoading();
   ajax(
     {
       url: mySettings.apiUrl +  url,
