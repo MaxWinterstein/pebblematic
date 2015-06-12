@@ -62,25 +62,25 @@ main.on('click', 'down', function(e) {
 function loadConfig(){
   loadFromUrl("config/", loadConfigCallBack);
 }
-function loadConfigCallBack(){
-  deceideNextElement(_rtnData, "Full Config");
-  //_loadingScreen.hide();
+function loadConfigCallBack(data){
+  deceideNextElement(data, "Full Config");
+  _loadingScreen.hide();
 }
 
 function loadAllDevices(){
   loadFromUrl("devices/", loadAllDevicesCallBack);
 } 
-function loadAllDevicesCallBack() {
-  showDevices(_rtnData.devices, "All Devices");
-  //_loadingScreen.hide();
+function loadAllDevicesCallBack(data) {
+  showDevices(data.devices, "All Devices");
+  _loadingScreen.hide();
 }
 
 function loadFavDevices(){
   loadFromUrl("pages/pebble", loadFavDevicesCallBack);
-  //_loadingScreen.hide();
+  _loadingScreen.hide();
 }
-function loadFavDevicesCallBack(){
-  deceideNextElement(_rtnData.page.devices, "Favourites");
+function loadFavDevicesCallBack(data){
+  deceideNextElement(data.page.devices, "Favourites");
 }
 
 function showDevices(devices){
@@ -101,7 +101,7 @@ function showDevices(devices){
       items: items
     }],
   });
-  menu.on('select', function(e) {
+  menu.on('longSelect', function(e) {
     console.log('Selected item #' + e.itemIndex + ' of section #' + e.sectionIndex);
     console.log('The item is titled "' + e.item.title + '"');
     console.log('The item is toString "' + e.item.toString() + '"');
@@ -112,16 +112,20 @@ function showDevices(devices){
     }
     deceideNextElement(e.item.item, e.item.title);
   });
-  menu.on('longSelect', function(e) {
+  menu.on('select', function(e) {
     console.log('Selected item #' + e.itemIndex + " - " + e.item.title +' of section #' + e.sectionIndex);
     console.log("e.item.item.myActions.longPressAction: " + e.item.item.myActions.longPressAction);
-    if (e.item.item.myActions !== null) e.item.item.myActions.longPressAction();
+    
+    if (e.item.item.myActions !== null) {
+      e.item.item.myActions.longPressAction();
+
+    }
     e.item.subtitle =  getDeviceState(e.item.item.id);
-    //_loadingScreen.hide();
-    console.log("e.keys" + Object.keys(e).toString());
-    //deceideNextElement(e, "bla");
-    //e.menu.select(e.itemIndex);
-    //e.item.subtitle =  Date.now();
+    menu.selection(function() {
+      // update the virtual menu and immediately send updates for visible items
+      // see http://forums.getpebble.com/discussion/15268/pebblejs-how-to-dynamically-create-a-ui-menu
+      menu.items(0, items);
+    });
     
   });
   menu.show();
@@ -163,7 +167,7 @@ function getDeviceState(id){
         state = "! " + _rtnData.device.template;
         break;
     }
-    //state = _rtnData.device.attributes[0].value.toString();
+    //state = data.device.attributes[0].value.toString();
   }
   catch(err) {
     console.log("cannot work on state thing...");
@@ -173,6 +177,9 @@ function getDeviceState(id){
 
 function loadFromUrl(url, callback) {
   //startLoading();
+  if (callback !== null)
+    startLoading();
+  
   ajax(
     {
       url: mySettings.apiUrl +  url,
@@ -182,8 +189,11 @@ function loadFromUrl(url, callback) {
     },
     function(data, status, request) {
       //console.log('Response: ' + data);
-      _rtnData = data;
-      if (callback !== null) callback();
+      //_rtnData = data;
+      if (callback !== null)
+        callback(data);
+      else
+        _rtnData = data;
     },
     function(error, status, request) {
       console.log(mySettings.apiUrl);
