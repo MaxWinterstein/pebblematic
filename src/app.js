@@ -77,13 +77,19 @@ function loadAllDevicesCallBack(data) {
 
 function loadFavDevices(){
   loadFromUrl("pages/pebble", loadFavDevicesCallBack);
-  _loadingScreen.hide();
 }
 function loadFavDevicesCallBack(data){
-  deceideNextElement(data.page.devices, "Favourites");
+  var devices = [ ];
+  for (var device in data.page.devices) {
+    console.log("id: " + data.page.devices[device].deviceId);
+    loadFromUrl("devices/" + data.page.devices[device].deviceId, null);
+    devices.push(_rtnData.device);
+  }
+  showDevices(devices, "Favourites");
+  _loadingScreen.hide();
 }
 
-function showDevices(devices){
+function showDevices(devices, title){
   var next = Object.prototype.toString.call(devices);
   console.log("devices is " + next);
   
@@ -98,6 +104,7 @@ function showDevices(devices){
   }
   var menu = new UI.Menu({
     sections: [{
+      title: title,
       items: items
     }],
   });
@@ -105,21 +112,20 @@ function showDevices(devices){
     console.log('Selected item #' + e.itemIndex + ' of section #' + e.sectionIndex);
     console.log('The item is titled "' + e.item.title + '"');
     console.log('The item is toString "' + e.item.toString() + '"');
-
-    for (var prop in e.item) {
-      console.log("Key:" + prop);
-      console.log("Value:" + e.item[prop]);
+    if (e.item.item.myActions !== null && e.item.item.myActions.longPressAction !== null) {
+      e.item.item.myActions.longPressAction();
     }
-    deceideNextElement(e.item.item, e.item.title);
+
   });
   menu.on('select', function(e) {
     console.log('Selected item #' + e.itemIndex + " - " + e.item.title +' of section #' + e.sectionIndex);
     console.log("e.item.item.myActions.longPressAction: " + e.item.item.myActions.longPressAction);
     
-    if (e.item.item.myActions !== null) {
-      e.item.item.myActions.longPressAction();
-
+    if (e.item.item.myActions !== null && e.item.item.myActions.shortPressAction !== null) {
+      e.item.item.myActions.shortPressAction();
     }
+    
+    // fetch new subtitle and redraw
     e.item.subtitle =  getDeviceState(e.item.item.id);
     menu.selection(function() {
       // update the virtual menu and immediately send updates for visible items
@@ -133,14 +139,16 @@ function showDevices(devices){
 }
 
 function getDeviceActions(device){
-  var longPress = "not set";
+  var longPress = function() {deceideNextElement(device);};
+  var shortPress = "not set";
+  
   console.log("getDeviceActions for: " + device.name + " with template " + device.template);
   switch (device.template) {
     case "presence":
       //       state = (device.attributes[0].value === false) ? "absend" : "presend";
       break;
     case "switch":
-      longPress = function() {
+      shortPress = function() {
         loadFromUrl("device/" + device.id + "/toggle", null);  
       };
       break;
@@ -148,7 +156,7 @@ function getDeviceActions(device){
       //   state = "! " + device.template;
       break;
   }
-  return {longPressAction: longPress };
+  return {longPressAction: longPress, shortPressAction: shortPress };
 }
 
 function getDeviceState(id){
