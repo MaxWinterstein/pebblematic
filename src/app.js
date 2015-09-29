@@ -21,6 +21,7 @@ var _loadingScreen = null;
 
 Light.on();
 
+// dev mode, no need to push button
 //setTimeout(function () { loadAllDevices();}, 5000);
 
 
@@ -103,6 +104,9 @@ function showDevices(devices, title){
     items.push({item: devices[device], title: devices[device].name, subtitle: getDeviceState(devices[device].id)});
   }
   var menu = new UI.Menu({
+    backgroundColor: 'tiffanyBlue',
+    highlightBackgroundColor: 'white',
+    highlightTextColor: 'black',
     sections: [{
       title: title,
       items: items
@@ -112,6 +116,7 @@ function showDevices(devices, title){
     console.log('Selected item #' + e.itemIndex + ' of section #' + e.sectionIndex);
     console.log('The item is titled "' + e.item.title + '"');
     console.log('The item is toString "' + e.item.toString() + '"');
+    console.log("e.item.item.myActions.longPressAction: " + e.item.item.myActions.longPressAction);
     if (e.item.item.myActions !== null && e.item.item.myActions.longPressAction !== null) {
       e.item.item.myActions.longPressAction();
     }
@@ -119,41 +124,48 @@ function showDevices(devices, title){
   });
   menu.on('select', function(e) {
     console.log('Selected item #' + e.itemIndex + " - " + e.item.title +' of section #' + e.sectionIndex);
-    console.log("e.item.item.myActions.longPressAction: " + e.item.item.myActions.longPressAction);
+    console.log('The item is titled "' + e.item.title + '"');
+    console.log('The item is toString "' + e.item.toString() + '"');
+    console.log("e.item.item.myActions.shortPressAction: " + e.item.item.myActions.shortPressAction);
     
     if (e.item.item.myActions !== null && e.item.item.myActions.shortPressAction !== null) {
       e.item.item.myActions.shortPressAction();
     }
-    
+   
     // fetch new subtitle and redraw
     e.item.subtitle =  getDeviceState(e.item.item.id);
-    menu.selection(function() {
-      // update the virtual menu and immediately send updates for visible items
-      // see http://forums.getpebble.com/discussion/15268/pebblejs-how-to-dynamically-create-a-ui-menu
-      menu.items(0, items);
-    });
-    
+    menu.item(e.sectionIndex, e.itemIndex, {title: e.item.title, subtitle: e.item.subtitle});
   });
   menu.show();
   
 }
 
 function getDeviceActions(device){
-  var longPress = function() {deceideNextElement(device);};
-  var shortPress = "not set";
+  var longPress = function() {deceideNextElement(device, "DEBUG - longPress");};
+  var shortPress = function() {return;};
   
   console.log("getDeviceActions for: " + device.name + " with template " + device.template);
   switch (device.template) {
     case "presence":
-      //       state = (device.attributes[0].value === false) ? "absend" : "presend";
       break;
     case "switch":
       shortPress = function() {
         loadFromUrl("device/" + device.id + "/toggle", null);  
       };
       break;
+    case "temperature":
+      shortPress = function() {
+        var text = "";
+        console.log("add addtribues");
+        for (var i in device.attributes) {
+          text += device.attributes[i].label + ": "  + device.attributes[i].value + device.attributes[i].unit + "\n";
+        }
+        text = text.substring(0, text.length - 1);
+        console.log(text);
+        deceideNextElement(text, "Details");
+      };
+      break;
     default:
-      //   state = "! " + device.template;
       break;
   }
   return {longPressAction: longPress, shortPressAction: shortPress };
@@ -170,6 +182,9 @@ function getDeviceState(id){
         break;
       case "switch":
         state = (_rtnData.device.attributes[0].value === false) ? "Off" : "On";
+        break;
+      case "temperature":
+        state = _rtnData.device.attributes[0].label + ": "  + _rtnData.device.attributes[0].value + _rtnData.device.attributes[0].unit;
         break;
       default:
         state = "! " + _rtnData.device.template;
@@ -219,6 +234,7 @@ function loadFromUrl(url, callback) {
 
 function startLoading() {
   _loadingScreen = (_loadingScreen === null) ? new UI.Card() :_loadingScreen;
+  _loadingScreen.backgroundColor('tiffanyBlue'),
   _loadingScreen.title('Loading...');
   _loadingScreen.subtitle('Please wait :)');
   _loadingScreen.show();
@@ -226,7 +242,7 @@ function startLoading() {
 
 function deceideNextElement(element, description) {
   var next = Object.prototype.toString.call(element);
-  console.log("next element is " + next);
+  console.log("next element (" + description + ") is " + next);
 
   if (next == "[object Object]" || next == "[object Array]") {
     var items = [ ]; 
