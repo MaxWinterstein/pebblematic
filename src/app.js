@@ -34,19 +34,8 @@ var main = new UI.Card({
   '[down] for full config\n\n' +
   '       by Max Winterstein'
 });
-main.backgroundColor('tiffanyBlue');
+main.backgroundColor('veryLightBlue');
 main.show();
-
-/*
-var splashScreen = new UI.Card({ banner: new UI.Image({
-  position: new Vector2(0, 0),
-  size: new Vector2(144, 144),
-  backgroundColor: 'clear',
-  image: 'MY_LOGO_NEW',
-}) });
-splashScreen.show();
-
-*/
 
 main.on('click', 'up', function(e) {
   loadAllDevices();
@@ -104,7 +93,7 @@ function showDevices(devices, title){
     items.push({item: devices[device], title: devices[device].name, subtitle: getDeviceState(devices[device].id)});
   }
   var menu = new UI.Menu({
-    backgroundColor: 'tiffanyBlue',
+    backgroundColor: 'veryLightBlue',
     highlightBackgroundColor: 'white',
     highlightTextColor: 'black',
     sections: [{
@@ -224,6 +213,7 @@ function loadFromUrl(url, callback) {
       var errorCard = new UI.Card();
       errorCard.scrollable(true);
       errorCard.title("ERROR");
+      errorCard.backgroundColor('red');
       errorCard.subtitle(status);
       errorCard.body(error + "\n" + request);
       errorCard.show();
@@ -233,10 +223,13 @@ function loadFromUrl(url, callback) {
 
 
 function startLoading() {
-  _loadingScreen = (_loadingScreen === null) ? new UI.Card() :_loadingScreen;
-  _loadingScreen.backgroundColor('tiffanyBlue'),
-  _loadingScreen.title('Loading...');
-  _loadingScreen.subtitle('Please wait :)');
+  if (_loadingScreen === null) {
+    _loadingScreen = new UI.Card({
+      backgroundColor : 'veryLightBlue',
+      title: 'Loading...',
+      subtitle: 'Please wait :)'
+    });
+  }
   _loadingScreen.show();
 }
 
