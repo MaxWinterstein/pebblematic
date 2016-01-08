@@ -6,8 +6,7 @@
 *  colors: https://github.com/pebble/pebblejs/blob/master/src/js/ui/simply-pebble.js#L73
 */
 
-// known bugs
-// - menu refreshes to wrong item 
+var version = "1.2";
 
 var UI = require('ui');
 var ajax = require('ajax');
@@ -28,11 +27,11 @@ Light.on();
 var main = new UI.Card({
   title: 'Pebblematic',
   //subicon : 'images/menu_icon.png',
-  subtitle: 'pimatic.org',
+  subtitle: 'for pimatic.org',
   body: '[up] all devices\n' +
   '[select] favourites\n' +
   '[down] for full config\n\n' +
-  '       by Max Winterstein'
+  version + '   by MaxWinterstein'
 });
 main.backgroundColor('veryLightBlue');
 main.show();

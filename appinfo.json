@@ -11,17 +11,17 @@
             {
                 "file": "images/menu_icon.png",
                 "name": "IMAGE_MENU_ICON",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/logo_splash.png",
                 "name": "IMAGE_LOGO_SPLASH",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/tile_splash.png",
                 "name": "IMAGE_TILE_SPLASH",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "fonts/UbuntuMono-Regular.ttf",
@@ -32,15 +32,19 @@
                 "file": "images/pimatic-logo-new.png",
                 "menuIcon": true,
                 "name": "IMAGES_PIMATIC_LOGO_NEW_PNG",
-                "type": "png"
+                "type": "bitmap"
             }
         ]
     },
     "sdkVersion": "3",
     "shortName": "PebbleMatic",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
     "uuid": "696a3ffc-c9f5-48dc-9a16-92ef3da951da",
     "versionCode": 1,
-    "versionLabel": "1.1",
+    "versionLabel": "1.2",
     "watchapp": {
         "hiddenApp": false,
         "watchface": false
